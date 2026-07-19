@@ -11,6 +11,7 @@ import { EffectControls } from "@/components/effect-controls"
 import { ImageCropper } from "@/components/image-cropper"
 import { ImageUploader } from "@/components/image-uploader"
 import { ModeToggle, type EditorMode } from "@/components/mode-toggle"
+import { SineWaveStage } from "@/components/sine-wave-stage"
 import { Button } from "@/components/ui/button"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Separator } from "@/components/ui/separator"
@@ -29,7 +30,6 @@ import {
   DEFAULT_EFFECT_SETTINGS,
   type EffectSettings,
 } from "@/lib/effect-settings"
-import { processSineWaveImage } from "@/lib/process-sine-wave"
 
 function downloadDataUrl(dataUrl: string, filename: string) {
   const link = document.createElement("a")
@@ -52,7 +52,6 @@ export default function SineWaveImageProcessor() {
   const [backdropCopy, setBackdropCopy] = useState<BackdropCopy>(
     DEFAULT_BACKDROP_COPY
   )
-  const canvasRef = useRef<HTMLCanvasElement>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
   const backdropRequestId = useRef(0)
 
@@ -74,19 +73,9 @@ export default function SineWaveImageProcessor() {
     setMode("image")
   }, [])
 
-  const processImage = useCallback(() => {
-    if (!image || !canvasRef.current || isCropping) return
-
-    void processSineWaveImage(canvasRef.current, image, settings).then(
-      setProcessedImage
-    )
-  }, [image, settings, isCropping])
-
-  useEffect(() => {
-    if (image && !isCropping) {
-      processImage()
-    }
-  }, [image, processImage, isCropping])
+  const handleProcessed = useCallback((dataUrl: string) => {
+    setProcessedImage(dataUrl)
+  }, [])
 
   useEffect(() => {
     if (!isBackdropMode || !processedImage) {
@@ -274,21 +263,15 @@ export default function SineWaveImageProcessor() {
                   onCropAreaChange={setCropArea}
                 />
               </div>
-            ) : processedImage ? (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img
-                src={processedImage}
-                alt="Processed sine-wave effect"
-                className="max-h-full max-w-full object-contain shadow-2xl shadow-black/40 ring-1 ring-black/40"
-              />
             ) : (
-              <div className="flex flex-col items-center gap-3 text-muted-foreground">
-                <Spinner className="size-6" />
-                <span className="text-sm">Processing…</span>
-              </div>
+              <SineWaveStage
+                key={image}
+                imageSrc={image}
+                settings={settings}
+                onProcessed={handleProcessed}
+              />
             )}
           </div>
-          <canvas ref={canvasRef} className="hidden" />
         </main>
 
         <aside className="flex max-h-[48vh] min-h-0 w-full shrink-0 flex-col border-t border-border bg-card md:max-h-none md:w-[340px] md:border-t-0 md:border-l">
