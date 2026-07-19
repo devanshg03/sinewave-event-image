@@ -3,10 +3,10 @@
 A browser-based editor for turning speaker photos into Cursor-branded event backdrops. Upload a portrait, apply an amplitude-modulated wavy-line duotone, then compose a 4K backdrop with headline, subhead, name, and role — ready for livestreams, stage screens, and social cards.
 
 <p align="center">
-  <img src="public/backdrop-example.png" alt="Example Cursor event backdrop with Live Build Session headline and stylized speaker portrait" width="900" />
+  <img src="public/editor-backdrop-mode.png" alt="Cursor event backdrop editor with wavy-line speaker portrait and copy fields" width="900" />
 </p>
 
-<p align="center"><em>Example export: Cursor lockup, event copy, and a wavy-line portrait on a 16:9 backdrop.</em></p>
+<p align="center"><em>Backdrop mode: Cursor lockup, event copy, and a wavy-line portrait on a 16:9 card.</em></p>
 
 ## What it does
 
@@ -152,7 +152,6 @@ public/
   brand/cursor-lockup.svg
   editor-image-mode.png
   editor-backdrop-mode.png
-  backdrop-example.png
 ```
 
 ## Stack
