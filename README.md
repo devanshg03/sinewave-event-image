@@ -1,18 +1,18 @@
 # Event Backdrop
 
-A browser-based editor for turning speaker photos into Cursor-branded event backdrops. Upload a portrait, apply a retro sine-wave scan-line duotone, then compose a 4K backdrop with headline, subhead, name, and role — ready for livestreams, stage screens, and social cards.
+A browser-based editor for turning speaker photos into Cursor-branded event backdrops. Upload a portrait, apply an amplitude-modulated wavy-line duotone, then compose a 4K backdrop with headline, subhead, name, and role — ready for livestreams, stage screens, and social cards.
 
 <p align="center">
   <img src="public/backdrop-example.png" alt="Example Cursor event backdrop with Live Build Session headline and stylized speaker portrait" width="900" />
 </p>
 
-<p align="center"><em>Example export: Cursor lockup, event copy, and a sine-wave portrait on a 16:9 backdrop.</em></p>
+<p align="center"><em>Example export: Cursor lockup, event copy, and a wavy-line portrait on a 16:9 backdrop.</em></p>
 
 ## What it does
 
 The app has two linked modes:
 
-1. **Image** — Process a photo into the signature wavy-line duotone look (crop, color presets, effect sliders).
+1. **Image** — Process a photo into the signature wavy-line look (crop, color presets, effect sliders, scan-in animation).
 2. **Backdrop** — Drop that processed image into a fixed Cursor layout and edit the on-canvas copy, then export a 4K PNG.
 
 Everything runs client-side in the browser (canvas + Web APIs). No upload server is required.
@@ -21,15 +21,15 @@ Everything runs client-side in the browser (canvas + Web APIs). No upload server
 
 ### Image mode
 
-Tune the sine-wave effect before composing the backdrop. Crop, pick a color preset, and adjust line frequency, thickness, wave amplitude, contrast, and brightness. Export the effect alone as PNG, or switch to Backdrop once you’re happy with the look.
+Tune the wavy-line effect before composing the backdrop. Crop, pick a color preset (or **Random**), and adjust line frequency, spacing, wave amplitude, contour depth, contrast, and brightness. On open, the preview holds quiet lines then scans the image signal top to bottom. Export the effect alone as PNG, or switch to Backdrop once you’re happy with the look.
 
-![Image mode editor with sine-wave portrait preview and effect controls](public/editor-image-mode.png)
+![Image mode editor with wavy-line portrait preview and effect controls](public/editor-image-mode.png)
 
 ### Backdrop mode
 
-Compose the full event card: Cursor lockup, headline/subhead on the left, 4:5 portrait on the right with name and role captions under the image. Copy updates preview live; **Export Backdrop** downloads a 3840×2160 PNG.
+Compose the full event card: Cursor lockup, headline/subhead on the left, portrait on the right with name and role captions under the image. Copy updates preview live; **Export Backdrop** downloads a 3840×2160 PNG.
 
-![Backdrop mode editor with Community Building card and copy fields](public/editor-backdrop-mode.png)
+![Backdrop mode editor with event card and copy fields](public/editor-backdrop-mode.png)
 
 ## Quick start
 
@@ -71,31 +71,35 @@ Use **Crop** to enter the cropper, **Apply** / **Cancel** to commit or discard, 
 
 > Tip: Prefer **4:5** when the photo will sit in a backdrop — that matches the portrait slot in the layout.
 
-### 3. Style the sine-wave effect
+### 3. Style the wavy-line effect
 
-**Color presets** (quick pairs):
+Horizontal tracks carry a sine carrier whose **amplitude follows image darkness** (darker → taller waves that pack denser ink). Highlights and the field keep a slight floor ripple.
+
+**Color presets** (ink on a light tinted field):
 
 | Preset | Foreground | Background |
 | --- | --- | --- |
-| Orange (default) | `#FF6B35` | `#8B2500` |
-| Tan | `#D4A574` | `#5C4A32` |
-| Yellow-Green | `#E6D84C` | `#4A5C23` |
-| Blue | `#6B8CFF` | `#1A2A5C` |
-| Purple | `#A78BFA` | `#3B2D5C` |
-| Green | `#4ADE80` | `#1A3D2E` |
+| Blue (default) | `#6B8CFF` | `#E8ECF5` |
+| Orange | `#FF6B35` | `#EBE6E1` |
+| Tan | `#D4A574` | `#F3EDE4` |
+| Purple | `#A78BFA` | `#EFEAF5` |
+| Green | `#4ADE80` | `#E6F2EA` |
+
+**Random** picks a new ink/field pair and nudges lightness until WCAG contrast is at least 4.5:1 (always on a light field).
 
 **Effect** controls:
 
 | Control | Range | Role |
 | --- | --- | --- |
-| Foreground / Background | Hex + picker | Duotone ink and field colors |
-| Line frequency | 1–10 | How dense the scan bands feel |
-| Line thickness | 2–40 px | Band height / stroke weight |
-| Wave amplitude | 0.5–4 | How much the lines undulate |
-| Contrast | 0.5–2 | Separates lights and darks before banding |
+| Foreground / Background | Hex + picker | Line ink and field colors |
+| Line frequency | 1–10 | Carrier period (higher → tighter waves) |
+| Line spacing | 2–20 px | Vertical pitch between tracks |
+| Wave amplitude | 0.5–5 | Peak wave height in dark regions |
+| Contour depth | 0–2 | Optional topographic y-bend (default off) |
+| Contrast | 0.5–3 | Separates lights and darks before modulation |
 | Brightness | −50–50 | Overall lift or crush |
 
-The preview updates as you change settings. **Export PNG** downloads `sine-wave-image.png`.
+New images scan in from quiet lines to the full effect. Slider tweaks snap to the full reveal. **Export PNG** downloads `sine-wave-image.png`.
 
 ### 4. Build the backdrop
 
@@ -132,14 +136,15 @@ components/
   image-uploader.tsx    # Empty-state dropzone
   image-cropper.tsx     # react-easy-crop stage
   crop-controls.tsx     # Aspect + crop actions
-  color-presets.tsx     # Duotone swatches
+  color-presets.tsx     # Duotone swatches + random pair
   effect-controls.tsx   # Colors + effect sliders
+  sine-wave-stage.tsx   # Live canvas preview + scan animation
   mode-toggle.tsx       # Image ↔ Backdrop
   backdrop-controls.tsx # Headline / subhead / name / role
   backdrop-stage.tsx    # Backdrop preview
 lib/
-  process-sine-wave.ts  # Scan-line duotone (canvas)
-  effect-settings.ts    # Defaults + color presets
+  process-sine-wave.ts  # Amplitude-modulated wavy lines (canvas)
+  effect-settings.ts    # Defaults, presets, contrast-safe random colors
   crop-image.ts         # Crop → data URL
   crop-aspects.ts       # Aspect presets
   backdrop.ts           # 4K canvas compositor
@@ -157,10 +162,11 @@ public/
 - TypeScript
 - Tailwind CSS 4 + [shadcn/ui](https://ui.shadcn.com)
 - [react-easy-crop](https://github.com/ValentinH/react-easy-crop) for cropping
-- Canvas 2D for the sine-wave effect and backdrop export
+- Canvas 2D for the wavy-line effect and backdrop export
 
 ## Notes
 
-- Processing and export happen entirely in the browser; large source images are downscaled during the sine-wave pass (max dimension 800px) for responsive preview performance.
+- Processing and export happen entirely in the browser. Small uploads are upscaled (and large ones capped) so line spacing and wave frequency have enough pixels.
 - Backdrop mode uses the **processed** image, not the raw upload — finish crop and effect settings in Image mode first.
 - Brand assets (lockup) live under `public/` and are loaded by the canvas renderer at export time.
+- `prefers-reduced-motion` skips the scan-in animation and shows the full effect immediately.

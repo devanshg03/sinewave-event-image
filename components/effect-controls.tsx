@@ -120,7 +120,7 @@ export function EffectControls({ settings, onChange }: EffectControlsProps) {
               onChange={(e) =>
                 handleColorInput("foregroundColor", e.target.value)
               }
-              placeholder="#FF6B35"
+              placeholder="#6B8CFF"
               className="h-9 font-mono text-xs uppercase"
               maxLength={7}
             />
@@ -147,7 +147,7 @@ export function EffectControls({ settings, onChange }: EffectControlsProps) {
               onChange={(e) =>
                 handleColorInput("backgroundColor", e.target.value)
               }
-              placeholder="#8B2500"
+              placeholder="#EBE6E1"
               className="h-9 font-mono text-xs uppercase"
               maxLength={7}
             />
@@ -171,7 +171,7 @@ export function EffectControls({ settings, onChange }: EffectControlsProps) {
         </SettingRow>
 
         <SettingRow
-          label="Line Thickness"
+          label="Line Spacing"
           valueLabel={`${settings.lineThickness}px`}
         >
           <Slider
@@ -180,7 +180,7 @@ export function EffectControls({ settings, onChange }: EffectControlsProps) {
               updateSetting("lineThickness", toSliderNumber(v))
             }
             min={2}
-            max={40}
+            max={20}
             step={1}
           />
         </SettingRow>
@@ -195,7 +195,22 @@ export function EffectControls({ settings, onChange }: EffectControlsProps) {
               updateSetting("waveAmplitude", toSliderNumber(v))
             }
             min={0.5}
-            max={4}
+            max={5}
+            step={0.1}
+          />
+        </SettingRow>
+
+        <SettingRow
+          label="Contour Depth"
+          valueLabel={settings.contourDepth.toFixed(1)}
+        >
+          <Slider
+            value={settings.contourDepth}
+            onValueChange={(v) =>
+              updateSetting("contourDepth", toSliderNumber(v))
+            }
+            min={0}
+            max={2}
             step={0.1}
           />
         </SettingRow>
@@ -205,8 +220,8 @@ export function EffectControls({ settings, onChange }: EffectControlsProps) {
             value={settings.contrast}
             onValueChange={(v) => updateSetting("contrast", toSliderNumber(v))}
             min={0.5}
-            max={2}
-            step={0.1}
+            max={3}
+            step={0.05}
           />
         </SettingRow>
 
